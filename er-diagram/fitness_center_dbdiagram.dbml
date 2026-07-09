@@ -1,0 +1,121 @@
+
+//db diagram
+
+Project FitnessCenterManagement {
+  database_type: "SQL Server"
+  note: "Boutique fitness center database for CMPS 339. Includes memberships, trainers, private sessions, group classes, attendance, rooms, and payments."
+}
+Table Members {
+  MemberID int [pk, increment]
+  FirstName varchar(50) [not null]
+  LastName varchar(50) [not null]
+  Email varchar(100) [not null, unique]
+  Phone varchar(20)
+  DateOfBirth date
+  JoinDate date [not null, default: `GETDATE()`]
+  MemberStatus varchar(20) [not null, default: 'Active']
+}
+Table MembershipPlans {
+  MembershipPlanID int [pk, increment]
+  PlanName varchar(50) [not null, unique]
+  MonthlyFee decimal(10,2) [not null]
+  ClassAccessLimit int
+  IncludesPersonalTraining bit [not null, default: 0]
+  PlanStatus varchar(20) [not null, default: 'Active']
+}
+Table MemberMemberships {
+  MemberMembershipID int [pk, increment]
+  MemberID int [not null]
+  MembershipPlanID int [not null]
+  StartDate date [not null]
+  EndDate date
+  MembershipStatus varchar(20) [not null, default: 'Active']
+  indexes {
+    (MemberID, MembershipPlanID, StartDate) [unique]
+  }
+}
+Table Trainers {
+  TrainerID int [pk, increment]
+  FirstName varchar(50) [not null]
+  LastName varchar(50) [not null]
+  Email varchar(100) [not null, unique]
+  Phone varchar(20)
+  Specialization varchar(100) [not null]
+  HourlyRate decimal(10,2) [not null]
+  HireDate date [not null, default: `GETDATE()`]
+  TrainerStatus varchar(20) [not null, default: 'Active']
+}
+Table Rooms {
+  RoomID int [pk, increment]
+  RoomName varchar(50) [not null, unique]
+  Capacity int [not null]
+  RoomStatus varchar(20) [not null, default: 'Available']
+}
+Table GroupClasses {
+  GroupClassID int [pk, increment]
+  ClassName varchar(75) [not null, unique]
+  ClassDescription varchar(255)
+  DifficultyLevel varchar(20) [not null]
+  DefaultDurationMinutes int [not null]
+  ClassStatus varchar(20) [not null, default: 'Active']
+}
+Table ClassSchedules {
+  ClassScheduleID int [pk, increment]
+  GroupClassID int [not null]
+  TrainerID int [not null]
+  RoomID int [not null]
+  StartDateTime datetime2 [not null]
+  EndDateTime datetime2 [not null]
+  MaxCapacity int [not null]
+  ScheduleStatus varchar(20) [not null, default: 'Scheduled']
+  indexes {
+    (GroupClassID, TrainerID, StartDateTime) [unique]
+    (RoomID, StartDateTime)
+  }
+}
+Table ClassAttendance {
+  ClassAttendanceID int [pk, increment]
+  ClassScheduleID int [not null]
+  MemberID int [not null]
+  CheckInTime datetime2
+  MemberRating int
+  AttendanceStatus varchar(20) [not null, default: 'Booked']
+  indexes {
+    (ClassScheduleID, MemberID) [unique]
+  }
+}
+Table PrivateSessions {
+  PrivateSessionID int [pk, increment]
+  MemberID int [not null]
+  TrainerID int [not null]
+  SessionStart datetime2 [not null]
+  SessionEnd datetime2 [not null]
+  FocusArea varchar(100) [not null]
+  SessionFee decimal(10,2) [not null]
+  SessionStatus varchar(20) [not null, default: 'Scheduled']
+  indexes {
+    (MemberID, TrainerID, SessionStart) [unique]
+  }
+}
+Table Payments {
+  PaymentID int [pk, increment]
+  MemberID int [not null]
+  MemberMembershipID int
+  PrivateSessionID int
+  PaymentDate datetime2 [not null, default: `GETDATE()`]
+  Amount decimal(10,2) [not null]
+  PaymentMethod varchar(30) [not null]
+  PaymentStatus varchar(20) [not null, default: 'Completed']
+}
+Ref: MemberMemberships.MemberID > Members.MemberID
+Ref: MemberMemberships.MembershipPlanID > MembershipPlans.MembershipPlanID
+Ref: PrivateSessions.MemberID > Members.MemberID
+Ref: PrivateSessions.TrainerID > Trainers.TrainerID
+Ref: ClassSchedules.GroupClassID > GroupClasses.GroupClassID
+Ref: ClassSchedules.TrainerID > Trainers.TrainerID
+Ref: ClassSchedules.RoomID > Rooms.RoomID
+Ref: ClassAttendance.ClassScheduleID > ClassSchedules.ClassScheduleID
+Ref: ClassAttendance.MemberID > Members.MemberID
+Ref: Payments.MemberID > Members.MemberID
+Ref: Payments.MemberMembershipID > MemberMemberships.MemberMembershipID
+Ref: Payments.PrivateSessionID > PrivateSessions.PrivateSessionID
