@@ -7,11 +7,6 @@
     Remy: Sample data, queries, views, reports
 */
 
-
--- Create the database
-CREATE DATABASE FitnessCenterDB;
-GO
-
 -- Create the database only if it does not already exist
 IF DB_ID('FitnessCenterDB') IS NULL
 BEGIN
@@ -19,7 +14,11 @@ BEGIN
 END;
 GO
 
--- Memmber table
+-- Use the project database
+USE FitnessCenterDB;
+GO
+
+-- Members table
 CREATE TABLE Members (
     MemberID INT IDENTITY(1,1) NOT NULL,
     FirstName VARCHAR(50) NOT NULL,
@@ -37,7 +36,23 @@ CREATE TABLE Members (
 GO
 
 -- MembershipPlans table
--- Create MemberMemberships table
+CREATE TABLE MembershipPlans (
+    MembershipPlanID INT IDENTITY(1,1) NOT NULL,
+    PlanName VARCHAR(50) NOT NULL,
+    MonthlyFee DECIMAL(10,2) NOT NULL,
+    ClassAccessLimit INT NULL,
+    IncludesPersonalTraining BIT NOT NULL CONSTRAINT DF_MembershipPlans_IncludesPersonalTraining DEFAULT (0),
+    PlanStatus VARCHAR(20) NOT NULL CONSTRAINT DF_MembershipPlans_PlanStatus DEFAULT ('Active'),
+
+    CONSTRAINT PK_MembershipPlans PRIMARY KEY (MembershipPlanID),
+    CONSTRAINT UQ_MembershipPlans_PlanName UNIQUE (PlanName),
+    CONSTRAINT CK_MembershipPlans_MonthlyFee CHECK (MonthlyFee > 0),
+    CONSTRAINT CK_MembershipPlans_ClassAccessLimit CHECK (ClassAccessLimit IS NULL OR ClassAccessLimit >= 0),
+    CONSTRAINT CK_MembershipPlans_PlanStatus CHECK (PlanStatus IN ('Active', 'Inactive'))
+);
+GO
+
+-- MemberMemberships table
 CREATE TABLE MemberMemberships (
     MemberMembershipID INT IDENTITY(1,1) NOT NULL,
     MemberID INT NOT NULL,
