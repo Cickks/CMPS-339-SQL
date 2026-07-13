@@ -1,227 +1,182 @@
-# Team Plan
+# Our Team Plan
 
-## What We're Actually Making
+## What We're Building
 
-We are making a SQL Server database for a fitness center / personal training system.
+We're building a SQL Server database for a fitness center and personal
+training business. The database will keep track of members, membership plans,
+trainers, rooms, group classes, attendance, private training sessions, and
+payments.
 
-We are not making an app or website. We are also not importing data from a spreadsheet.
+By the end of the project, we need:
 
-The project is basically:
+- an ER diagram that matches our database
+- all 10 tables with the correct keys and constraints
+- at least five useful sample rows in every table
+- the five queries required by the assignment
+- two views for our reports
+- one final SQL file that runs without errors
+- our reflection, documentation, and presentation
 
-- design the database
-- create the tables in SQL Server
-- add sample data
-- write queries and views to prove the database works
+## What We Have So Far
 
-The database is for a gym that tracks members, trainers, membership plans, group classes, private sessions, attendance, rooms, and payments.
-
-## What We Already Have Done
-
-We already have:
-
-- GitHub repo set up
-- folders made for docs, ER diagram, SQL, and final submission
-- assignment instructions in the repo
-- database design document
-- ER diagram source and image
-- SQL Server / SSMS installed
-- SQL Server connection working through `localhost`
-- database created: `FitnessCenterDB`
-
-We also already created and tested these tables:
-
-- `Members`
-- `MembershipPlans`
-- `MemberMemberships`
-- `Trainers`
-- `Rooms`
-
-## Full Table List
-
-The final database should have 10 tables:
+The repository, ER diagram, Docker setup, and first five tables are already in
+place. Those tables are:
 
 1. `Members`
 2. `MembershipPlans`
 3. `MemberMemberships`
 4. `Trainers`
 5. `Rooms`
+
+We still need to build:
+
 6. `GroupClasses`
 7. `ClassSchedules`
 8. `ClassAttendance`
 9. `PrivateSessions`
 10. `Payments`
 
-## Michael's Part
+To keep us from doing the same work twice or causing unnecessary Git
+conflicts, each of us will own a specific part of the database.
 
-Michael is handling the database structure.
+## Michael (me)
 
-That means:
+I will:
 
-- `CREATE DATABASE`
-- `CREATE TABLE`
-- primary keys
-- foreign keys
-- `UNIQUE` constraints
-- `CHECK` constraints
-- `DEFAULT` constraints
+- maintain the first five tables
+- maintain the Docker setup
+- review everyone's branches
+- combine our work into `sql/FitnessCenterDB.sql`
+- check the table and insert order
+- make sure the foreign keys and constraints work
+- compare the final SQL with the ER diagram
+- run the complete project from a clean database before submission
 
-Michael already finished the first 5 tables.
+I do not need to recreate Nicholas's or Areeba's tables. my job is to review them, help fix integration problems, and make sure everything works together.
 
-Michael still needs to create:
+my current Branch: `MIKEDEV`
 
-- `GroupClasses`
-- `ClassSchedules`
-- `ClassAttendance`
-- `PrivateSessions`
-- `Payments`
+Presentation section: database design, relationships, constraints, Docker,
+and how the whole project fits together.
 
-Once those are done, the full database structure is ready for sample data and queries.
+## Remy
 
-## Remy's Part
+Remy will handle the sample data for the first five tables.
 
-Remy is handling the data and reports side.
+Remy will:
 
-That means:
+- remove the incorrect `MembershipPlans` insert that uses `DurationMonths`
+- keep the correct membership-plan insert
+- add at least five `MemberMemberships` records
+- make sure `Members`, `MembershipPlans`, `MemberMemberships`, `Trainers`, and
+  `Rooms` each have at least five useful rows
+- write the query that counts members in each membership plan
+- test the inserts and query before asking for a review
 
-- sample `INSERT` statements
-- required SQL queries
-- views
-- testing query results
-- optional stored procedure if we have time
+ current Branch: `remy-sample-data`
 
-Remy can start sample data now for the tables that already exist:
+Presentation section: members, membership plans, memberships, trainers,
+rooms, and sample data.
 
-- `Members`
-- `MembershipPlans`
-- `Trainers`
-- `Rooms`
-- `MemberMemberships`
+## Nicholas
 
-Use this insert order:
+Nicholas will handle the group fitness class side of the database.
 
-1. `Members`
-2. `MembershipPlans`
-3. `Trainers`
-4. `Rooms`
-5. `MemberMemberships`
-
-`MemberMemberships` has to come after `Members` and `MembershipPlans` because it uses their IDs.
-
-Remy should wait on these until Michael creates the rest of the tables:
+Nicholas will create:
 
 - `GroupClasses`
 - `ClassSchedules`
 - `ClassAttendance`
+
+He will also:
+
+- add the correct primary keys, foreign keys, checks, defaults, and unique
+  constraints
+- add at least five useful sample rows to each table
+- include enough attendance data for at least one member to attend more than
+  five classes
+- include ratings so we can calculate an average rating for each class
+- write the query that lists group classes with their trainers
+- write the query that finds members who attended more than five classes
+- write the query that calculates the average rating for each class
+- create the member class check-in view
+- test everything before asking for a review
+
+Branch: `what ever u want lol `
+
+Working file: `dont matter to me`
+
+Presentation section: classes, schedules, attendance, ratings, and the
+check-in report.
+
+## Areeba
+
+Areeba will handle private training and payments.
+
+Areeba will create:
+
 - `PrivateSessions`
 - `Payments`
 
-## What Remy's Data Needs To Show
+She will also:
 
-The sample data should not just be random. It needs to help the queries work.
+- add the correct primary keys, foreign keys, checks, defaults, and unique
+  constraints
+- add at least five useful sample rows to each table
+- write the query that lists members, their private sessions, and their
+  trainers
+- create the trainer revenue or total-session-hours view
+- help with the optional booking procedure if we have time
+- test everything before asking for a review
 
-Try to include:
+Branch: `up to you`
 
-- at least 5 members
-- multiple membership plans
-- at least 5 trainers
-- at least 5 rooms
-- at least 5 membership records
-- enough class attendance later so one member has more than 5 classes
-- ratings for group classes
-- private sessions and payments so revenue reports work
+Working file: `up to u`
 
-## Required Queries
+Presentation section: private sessions, payments, trainer revenue, and
+reports.
 
-We need queries that:
+## How We'll Work Together
 
-1. list members and their private sessions with trainer names
-2. list group classes and the trainer teaching them
-3. count members by membership type
-4. find members who attended more than 5 group classes
-5. calculate average rating per group class
+Before starting a new part, we'll update our branch from the latest `main`.
+We'll work in small sections, test each section in SQL Server, and make clear
+commits instead of waiting until everything is finished.
 
-We should also make sure the final SQL shows joins, grouping, `HAVING`, ordering, aggregates, and maybe a subquery or `CASE`.
+Nicholas and Areeba will work in their own SQL files so they do not have to
+edit the shared file at the same time. After their work passes review, I will combine it into `sql/FitnessCenterDB.sql`.
 
-## Required Views
+If one person's work depends on another person's tables or data, we'll talk
+about the IDs and insert order before writing the inserts. We will not change
+someone else's section without letting them know.
 
-We need at least two views:
+## The Order We'll Follow
 
-1. trainer revenue or total session hours
-2. member group class check-in log
+1. Remy fixes and finishes the sample data for the first five tables.
+2. Nicholas creates and tests the group-class tables and data.
+3. Areeba creates and tests the private-session and payment tables and data.
+4. We merge and test each branch one at a time.
+5. We finish all five queries and both views.
+6. If we have time, we add the optional stored procedure.
+7. We run the full SQL file from a clean Docker database.
+8. We finish the reflection, documentation, and presentation.
 
-Extra views if we have time:
+## Before We Submit
 
-- active memberships
-- popular classes
-- trainer schedule
-
-## Optional Stored Procedure
-
-If we have time, we can add:
-
-`BookGroupClass`
-
-It would:
-
-- take a `MemberID`
-- take a `ClassScheduleID`
-- check if the member exists
-- check if the class exists
-- make sure the member is not already booked
-- check class capacity
-- add the booking
-
-This is optional, but it would help the project look stronger.
-
-## Current Next Steps
-
-1. Michael finishes the remaining 5 tables.
-2. Remy starts inserts for the first 5 tables.
-3. After all tables exist, Remy finishes the rest of the sample data.
-4. Remy writes the required queries.
-5. We test everything in SSMS.
-6. We commit/push working chunks.
-7. We prepare the final submission.
-
-## Stuff We Both Need To Help With
-
-After the basic table structure and sample data are done, both of us should help clean up and test the project.
-
-Shared work:
-
-- run the full SQL script from top to bottom
-- fix errors together
-- check that all foreign keys work
-- make sure every table has at least 5 rows
-- make sure the required queries actually return results
-- make sure the views run correctly
-- check the ER diagram matches the SQL tables
-- clean up comments and formatting in the SQL file
-- make sure the final files are in the right folders
-- help with the reflection / presentation
-
-Presentation split:
-
-- Michael explains the database structure, relationships, keys, constraints, and normalization.
-- Remy explains the sample data, queries, views, reports, and what the results show.
-- Both of us should understand the full project enough to answer basic questions.
-
-Final review checklist:
+As a team, we'll check that:
 
 - all 10 tables exist
-- primary keys work
-- foreign keys work
-- constraints make sense
-- sample data is realistic
-- required queries are included
-- required views are included
-- optional stored procedure is included if we have time
-- final `.sql` file runs without errors
+- every table has at least five rows
+- all keys and constraints work
+- the sample data makes our queries return useful results
+- all five required queries work
+- both required views work
+- the ER diagram and SQL match
+- the final SQL file runs from top to bottom without errors
+- Docker can build and initialize the database
+- our final files are organized correctly
+- each of us understands our presentation section
+- our reflection and documentation are finished
 
-## Team Rule
-
-Do not write a huge chunk and hope it works.
-
-Write a small part, run it, fix it, then commit it.
-
-That will make the project way easier to debug.
+The goal is not just to finish our individual sections. We all need to help
+test the final project and understand enough of the database to answer basic
+questions during the presentation.
