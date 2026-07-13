@@ -1,52 +1,44 @@
-# CMPS 339 Team Plan
+# Team Plan
 
-## Project Summary
+## What We're Actually Making
 
-We are building a SQL Server relational database for a Fitness Center & Personal Training Management System.
+We are making a SQL Server database for a fitness center / personal training system.
 
-The database will track:
+We are not making an app or website. We are also not importing data from a spreadsheet.
 
-- members
-- membership plans
-- member membership history
-- trainers
-- rooms
-- group classes
-- scheduled class meetings
-- class attendance
-- private training sessions
-- payments
+The project is basically:
 
-This is not a website or full application. The main deliverable is a database design plus SQL scripts.
+- design the database
+- create the tables in SQL Server
+- add sample data
+- write queries and views to prove the database works
+
+The database is for a gym that tracks members, trainers, membership plans, group classes, private sessions, attendance, rooms, and payments.
 
 ## What We Already Have Done
 
-Current completed setup:
+We already have:
 
-- GitHub repository created: `CMPS-339-SQL`
-- Folder structure created:
-  - `docs/`
-  - `er-diagram/`
-  - `sql/`
-  - `final-submission/`
-- Assignment instructions added to the repo.
-- Design document created for the database.
-- ER diagram source created in DBML format.
-- ER diagram image exported.
-- SQL Server and SSMS installed on the main machine.
-- SSMS successfully connected to `localhost`.
+- GitHub repo set up
+- folders made for docs, ER diagram, SQL, and final submission
+- assignment instructions in the repo
+- database design document
+- ER diagram source and image
+- SQL Server / SSMS installed
+- SQL Server connection working through `localhost`
+- database created: `FitnessCenterDB`
 
-Design work already completed:
+We also already created and tested these tables:
 
-- final database scope chosen
-- 10-table schema selected
-- relationships planned
-- normalization/anomaly discussion drafted
-- ER diagram generated from the schema
+- `Members`
+- `MembershipPlans`
+- `MemberMemberships`
+- `Trainers`
+- `Rooms`
 
-## Current Database Design
+## Full Table List
 
-The planned tables are:
+The final database should have 10 tables:
 
 1. `Members`
 2. `MembershipPlans`
@@ -59,43 +51,23 @@ The planned tables are:
 9. `PrivateSessions`
 10. `Payments`
 
-Important relationship:
+## Michael's Part
 
-- `ClassAttendance` is the bridge table between members and scheduled group classes.
+Michael is handling the database structure.
 
-## Recommended Work Split
+That means:
 
-### Michael: Database Structure
-
-Responsible for:
-
-- creating the database
-- writing the first version of `CREATE TABLE` statements
+- `CREATE DATABASE`
+- `CREATE TABLE`
 - primary keys
 - foreign keys
 - `UNIQUE` constraints
 - `CHECK` constraints
 - `DEFAULT` constraints
 
-Suggested tables:
+Michael already finished the first 5 tables.
 
-- `Members`
-- `MembershipPlans`
-- `MemberMemberships`
-- `Trainers`
-- `Rooms`
-
-### Remy: Data, Queries, and Reports
-
-Responsible for:
-
-- sample data inserts
-- required SQL queries
-- views
-- optional stored procedure
-- testing query results
-
-Suggested tables/query focus:
+Michael still needs to create:
 
 - `GroupClasses`
 - `ClassSchedules`
@@ -103,35 +75,81 @@ Suggested tables/query focus:
 - `PrivateSessions`
 - `Payments`
 
-## Required SQL Queries
+Once those are done, the full database structure is ready for sample data and queries.
 
-The final SQL file must include queries that:
+## Remy's Part
 
-1. List all members and the private sessions they booked, including trainer names.
-2. List all group fitness classes with the trainer teaching them.
-3. Count members by membership type.
-4. Identify members who attended more than 5 group classes.
-5. Calculate average member rating per group class.
+Remy is handling the data and reports side.
 
-We should also include examples of:
+That means:
 
-- `INNER JOIN`
-- `LEFT JOIN`
-- `GROUP BY`
-- `HAVING`
-- `ORDER BY`
-- aggregate functions
-- subqueries or `EXISTS`
-- `CASE`
+- sample `INSERT` statements
+- required SQL queries
+- views
+- testing query results
+- optional stored procedure if we have time
+
+Remy can start sample data now for the tables that already exist:
+
+- `Members`
+- `MembershipPlans`
+- `Trainers`
+- `Rooms`
+- `MemberMemberships`
+
+Use this insert order:
+
+1. `Members`
+2. `MembershipPlans`
+3. `Trainers`
+4. `Rooms`
+5. `MemberMemberships`
+
+`MemberMemberships` has to come after `Members` and `MembershipPlans` because it uses their IDs.
+
+Remy should wait on these until Michael creates the rest of the tables:
+
+- `GroupClasses`
+- `ClassSchedules`
+- `ClassAttendance`
+- `PrivateSessions`
+- `Payments`
+
+## What Remy's Data Needs To Show
+
+The sample data should not just be random. It needs to help the queries work.
+
+Try to include:
+
+- at least 5 members
+- multiple membership plans
+- at least 5 trainers
+- at least 5 rooms
+- at least 5 membership records
+- enough class attendance later so one member has more than 5 classes
+- ratings for group classes
+- private sessions and payments so revenue reports work
+
+## Required Queries
+
+We need queries that:
+
+1. list members and their private sessions with trainer names
+2. list group classes and the trainer teaching them
+3. count members by membership type
+4. find members who attended more than 5 group classes
+5. calculate average rating per group class
+
+We should also make sure the final SQL shows joins, grouping, `HAVING`, ordering, aggregates, and maybe a subquery or `CASE`.
 
 ## Required Views
 
-The final project should include at least two views:
+We need at least two views:
 
-1. Trainer revenue or total session hours summary.
-2. Member class check-in log.
+1. trainer revenue or total session hours
+2. member group class check-in log
 
-Recommended extra views if time allows:
+Extra views if we have time:
 
 - active memberships
 - popular classes
@@ -139,41 +157,71 @@ Recommended extra views if time allows:
 
 ## Optional Stored Procedure
 
-Recommended stored procedure:
+If we have time, we can add:
 
 `BookGroupClass`
 
-Purpose:
+It would:
 
-- accept `MemberID` and `ClassScheduleID`
-- check whether the member exists
-- check whether the class exists
-- prevent duplicate bookings
+- take a `MemberID`
+- take a `ClassScheduleID`
+- check if the member exists
+- check if the class exists
+- make sure the member is not already booked
 - check class capacity
-- insert the booking into `ClassAttendance`
+- add the booking
 
-This is a good bonus feature because it shows real database management logic.
+This is optional, but it would help the project look stronger.
 
-## Next Steps
+## Current Next Steps
 
-1. Confirm SQL Server test queries work in SSMS:
-   - `SELECT @@VERSION AS SQLServerVersion;`
-   - `SELECT DB_NAME() AS CurrentDatabase;`
-2. Create the first SQL file in `sql/`.
-3. Start with only the database and first three tables:
-   - `Members`
-   - `MembershipPlans`
-   - `MemberMemberships`
-4. Run and test those tables before adding more.
-5. Commit small working changes to GitHub.
-6. Continue table-by-table until all 10 tables are created.
-7. Add sample data.
-8. Add required queries.
-9. Add views.
-10. Add stored procedure if time allows.
+1. Michael finishes the remaining 5 tables.
+2. Remy starts inserts for the first 5 tables.
+3. After all tables exist, Remy finishes the rest of the sample data.
+4. Remy writes the required queries.
+5. We test everything in SSMS.
+6. We commit/push working chunks.
+7. We prepare the final submission.
+
+## Stuff We Both Need To Help With
+
+After the basic table structure and sample data are done, both of us should help clean up and test the project.
+
+Shared work:
+
+- run the full SQL script from top to bottom
+- fix errors together
+- check that all foreign keys work
+- make sure every table has at least 5 rows
+- make sure the required queries actually return results
+- make sure the views run correctly
+- check the ER diagram matches the SQL tables
+- clean up comments and formatting in the SQL file
+- make sure the final files are in the right folders
+- help with the reflection / presentation
+
+Presentation split:
+
+- Michael explains the database structure, relationships, keys, constraints, and normalization.
+- Remy explains the sample data, queries, views, reports, and what the results show.
+- Both of us should understand the full project enough to answer basic questions.
+
+Final review checklist:
+
+- all 10 tables exist
+- primary keys work
+- foreign keys work
+- constraints make sense
+- sample data is realistic
+- required queries are included
+- required views are included
+- optional stored procedure is included if we have time
+- final `.sql` file runs without errors
 
 ## Team Rule
 
-Do not write the whole SQL file at once.
+Do not write a huge chunk and hope it works.
 
-Write a small section, run it, fix errors, commit it, then move to the next section. This will make the project easier to debug and easier to explain during presentation.
+Write a small part, run it, fix it, then commit it.
+
+That will make the project way easier to debug.
