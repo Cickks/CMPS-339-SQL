@@ -91,3 +91,57 @@ CREATE TABLE Rooms (
     CONSTRAINT CK_Rooms_RoomStatus CHECK (RoomStatus IN ('Available', 'Unavailable', 'Maintenance'))
 );
 GO
+
+INSERT INTO Members (FirstName, LastName, Email, Phone, DateOfBirth, JoinDate, MemberStatus)
+VALUES
+('Ari', 'Miller', 'ari.m@email.com', '985-555-0101', '1998-03-14', '2025-01-15', 'Active'),
+('Noelle', 'Chutz', 'noelle.c@email.com', '985-555-0102', '2001-07-22', '2025-03-02', 'Active'),
+('Quandale', 'Dingle', 'quandale.d@email.com', '985-555-0103', '1995-11-05', '2025-04-20', 'Active'),
+('Noah', 'Martin', 'noah.m@email.com', NULL, '2000-01-30', '2025-06-10', 'Inactive'),
+('Zoe', 'Hebert', 'zoe.h@email.com', '985-555-0105', '1999-09-18', '2025-07-01', 'Active');
+GO
+
+-- 2. MembershipPlans (5 rows)
+
+INSERT INTO MembershipPlans (PlanName, MonthlyFee, DurationMonths)
+VALUES
+('Basic Monthly', 29.99, 1),
+('Premium Monthly', 59.99, 1),
+('Basic Annual', 299.99, 12),
+('Premium Annual', 599.99, 12),
+('Student Plan', 19.99, 1);
+GO
+
+-- 3. Trainers (5 rows)
+
+INSERT INTO Trainers (FirstName, LastName, Email, Phone, Specialization, HourlyRate, HireDate, TrainerStatus)
+VALUES
+('Marcus', 'Reilly', 'marcus.r@fitcenter.com', '985-555-0201', 'Strength', 45.00, '2023-02-01', 'Active'),
+('Dana', 'Cho', 'dana.c@fitcenter.com', '985-555-0202', 'Yoga', 40.00, '2022-08-15', 'Active'),
+('Jorge', 'Alvarez', 'jorge.a@fitcenter.com', '985-555-0203', 'HIIT', 50.00, '2023-05-10', 'Active'),
+('Priya', 'Nair', 'priya.n@fitcenter.com', '985-555-0204', 'Pilates', 42.00, '2024-01-20', 'Active'),
+('Kevin', 'Okafor', 'kevin.o@fitcenter.com', NULL, 'CrossFit', 48.00, '2021-11-01', 'Inactive');
+GO
+
+-- 4. Rooms (5 rows)
+
+INSERT INTO Rooms (RoomName, Capacity, RoomStatus)
+VALUES
+('Studio A', 20, 'Available'),
+('Studio B', 15, 'Available'),
+('Weight Room', 30, 'Available'),
+('CrossFit Box', 12, 'Maintenance'),
+('Private Training Room', 4, 'Available');
+GO
+
+-- 5. MemberMemberships (5 rows) — inserted LAST
+-- Requires valid MemberID (1-5) and MembershipPlanID (1-5) from above
+
+INSERT INTO MemberMemberships (MemberID, MembershipPlanID, StartDate, EndDate, MembershipStatus)
+VALUES
+(1, 2, '2025-01-15', NULL, 'Active'),
+(2, 1, '2025-03-02', NULL, 'Active'),
+(3, 4, '2025-04-20', NULL, 'Active'),
+(4, 3, '2025-06-10', '2025-12-10', 'Expired'),
+(5, 5, '2025-07-01', NULL, 'Active');
+GO
