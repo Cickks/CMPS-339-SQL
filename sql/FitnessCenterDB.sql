@@ -3,8 +3,10 @@
     Fitness Center & Personal Training Management System
     SQL Server Database Script
 
-    Michael: Database structure, tables, keys, constraints
-    Remy: Sample data, queries, views, reports
+    Michael: Core tables, integration, and final testing
+    Remy: Core sample data and membership-plan query
+    Nicholas: Group classes, schedules, attendance, queries, and check-in view
+    Areeba: Private sessions, payments, query, and trainer revenue view
 */
 
 -- Create the database only if it does not already exist
