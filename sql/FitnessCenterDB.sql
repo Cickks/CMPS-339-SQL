@@ -3,8 +3,10 @@
     Fitness Center & Personal Training Management System
     SQL Server Database Script
 
-    Michael: Database structure, tables, keys, constraints
-    Remy: Sample data, queries, views, reports
+    Michael: Core tables, integration, and final testing
+    Remy: Core sample data and membership-plan query
+    Nicholas: Group classes, schedules, attendance, queries, and check-in view
+    Areeba: Private sessions, payments, query, and trainer revenue view
 */
 
 -- Create the database only if it does not already exist
@@ -106,6 +108,7 @@ CREATE TABLE Rooms (
     CONSTRAINT CK_Rooms_RoomStatus CHECK (RoomStatus IN ('Available', 'Unavailable', 'Maintenance'))
 );
 GO
+<<<<<<< HEAD
 
 INSERT INTO Members (FirstName, LastName, Email, Phone, DateOfBirth, JoinDate, MemberStatus)
 VALUES
@@ -159,3 +162,5 @@ VALUES
     (4, 4, '2025-06-10', '2025-07-10', 'Expired'),
     (5, 5, '2025-07-01', NULL, 'Active');
 GO
+=======
+>>>>>>> origin/main
