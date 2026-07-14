@@ -108,7 +108,7 @@ CREATE TABLE Rooms (
     CONSTRAINT CK_Rooms_RoomStatus CHECK (RoomStatus IN ('Available', 'Unavailable', 'Maintenance'))
 );
 GO
-<<<<<<< HEAD
+
 
 INSERT INTO Members (FirstName, LastName, Email, Phone, DateOfBirth, JoinDate, MemberStatus)
 VALUES
@@ -163,4 +163,4 @@ VALUES
     (5, 5, '2025-07-01', NULL, 'Active');
 GO
 =======
->>>>>>> origin/main
+
