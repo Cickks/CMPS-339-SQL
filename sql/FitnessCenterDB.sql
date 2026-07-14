@@ -116,16 +116,6 @@ VALUES
 ('Zoe', 'Hebert', 'zoe.h@email.com', '985-555-0105', '1999-09-18', '2025-07-01', 'Active');
 GO
 
--- 2. MembershipPlans (5 rows)
-
-INSERT INTO MembershipPlans (PlanName, MonthlyFee, DurationMonths)
-VALUES
-('Basic Monthly', 29.99, 1),
-('Premium Monthly', 59.99, 1),
-('Basic Annual', 299.99, 12),
-('Premium Annual', 599.99, 12),
-('Student Plan', 19.99, 1);
-GO
 
 -- 3. Trainers (5 rows)
 
@@ -158,4 +148,14 @@ VALUES
 ('Basic Annual', 24.99, 8, 0, 'Active'),
 ('Premium Annual', 49.99, NULL, 1, 'Active'),
 ('Student Plan', 19.99, 4, 0, 'Active');
+GO
+
+INSERT INTO MemberMemberships
+    (MemberID, MembershipPlanID, StartDate, EndDate, MembershipStatus)
+VALUES
+    (1, 1, '2025-01-15', NULL, 'Active'),
+    (2, 2, '2025-03-02', NULL, 'Active'),
+    (3, 3, '2025-04-20', NULL, 'Active'),
+    (4, 4, '2025-06-10', '2025-07-10', 'Expired'),
+    (5, 5, '2025-07-01', NULL, 'Active');
 GO
