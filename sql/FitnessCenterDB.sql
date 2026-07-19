@@ -248,3 +248,52 @@ VALUES
 (5, 4, '2026-07-22 09:55:00', 5);
 GO
 
+CREATE VIEW vw_MemberCheckInLog AS
+SELECT 
+    m.MemberID,
+    m.FirstName AS MemberFirstName,
+    m.LastName AS MemberLastName,
+    c.ClassName,
+    s.ScheduleTime,
+    a.CheckInTime,
+    a.MemberRating
+FROM ClassAttendance a
+INNER JOIN Members m ON a.MemberID = m.MemberID
+INNER JOIN ClassSchedules s ON a.ScheduleID = s.ScheduleID
+INNER JOIN GroupClasses c ON s.ClassID = c.ClassID;
+GO
+
+SELECT 
+    c.ClassName,
+    s.ScheduleTime,
+    t.FirstName AS TrainerFirstName,
+    t.LastName AS TrainerLastName,
+    r.RoomName
+FROM ClassSchedules s
+INNER JOIN GroupClasses c ON s.ClassID = c.ClassID
+INNER JOIN Trainers t ON s.TrainerID = t.TrainerID
+INNER JOIN Rooms r ON s.RoomID = r.RoomID
+ORDER BY s.ScheduleTime ASC;
+
+SELECT 
+    m.MemberID,
+    m.FirstName,
+    m.LastName,
+    COUNT(a.AttendanceID) AS TotalClassesAttended
+FROM ClassAttendance a
+INNER JOIN Members m ON a.MemberID = m.MemberID
+GROUP BY m.MemberID, m.FirstName, m.LastName
+HAVING COUNT(a.AttendanceID) > 5;
+
+SELECT 
+    c.ClassID,
+    c.ClassName,
+    AVG(CAST(a.MemberRating AS DECIMAL(3,2))) AS AverageRating,
+    COUNT(a.MemberRating) AS TotalRatingsReceived
+FROM ClassAttendance a
+INNER JOIN ClassSchedules s ON a.ScheduleID = s.ScheduleID
+INNER JOIN GroupClasses c ON s.ClassID = c.ClassID
+WHERE a.MemberRating IS NOT NULL
+GROUP BY c.ClassID, c.ClassName;
+
+SELECT * FROM vw_MemberCheckInLog ORDER BY CheckInTime DESC;
