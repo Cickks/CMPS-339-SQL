@@ -109,6 +109,58 @@ CREATE TABLE Rooms (
 );
 GO
 
+-- GroupClasses Table
+CREATE TABLE GroupClasses (
+    ClassID INT IDENTITY(1,1) NOT NULL,
+    ClassName VARCHAR(50) NOT NULL,
+    ClassDescription VARCHAR(255) NULL,
+    ClassStatus VARCHAR(20) NOT NULL CONSTRAINT DF_GroupClasses_ClassStatus DEFAULT ('Active'),
+
+    CONSTRAINT PK_GroupClasses PRIMARY KEY (ClassID),
+    CONSTRAINT UQ_GroupClasses_ClassName UNIQUE (ClassName),
+    CONSTRAINT CK_GroupClasses_ClassStatus CHECK (ClassStatus IN ('Active', 'Inactive'))
+);
+GO
+
+-- ClassSchedules Table 
+CREATE TABLE ClassSchedules (
+    ScheduleID INT IDENTITY(1,1) NOT NULL,
+    ClassID INT NOT NULL,
+    TrainerID INT NOT NULL,
+    RoomID INT NOT NULL,
+    ScheduleTime DATETIME NOT NULL,
+    MaxCapacity INT NOT NULL,
+
+    CONSTRAINT PK_ClassSchedules PRIMARY KEY (ScheduleID),
+    CONSTRAINT CK_ClassSchedules_MaxCapacity CHECK (MaxCapacity > 0),
+    CONSTRAINT FK_ClassSchedules_GroupClasses FOREIGN KEY (ClassID)
+        REFERENCES GroupClasses(ClassID),
+    CONSTRAINT FK_ClassSchedules_Trainers FOREIGN KEY (TrainerID)
+        REFERENCES Trainers(TrainerID),
+    CONSTRAINT FK_ClassSchedules_Rooms FOREIGN KEY (RoomID)
+        REFERENCES Rooms(RoomID)
+);
+GO
+
+-- ClassAttendance Table 
+CREATE TABLE ClassAttendance (
+    AttendanceID INT IDENTITY(1,1) NOT NULL,
+    MemberID INT NOT NULL,
+    ScheduleID INT NOT NULL,
+    CheckInTime DATETIME NOT NULL CONSTRAINT DF_ClassAttendance_CheckInTime DEFAULT (GETDATE()),
+    MemberRating INT NULL,
+
+    CONSTRAINT PK_ClassAttendance PRIMARY KEY (AttendanceID),
+    CONSTRAINT UQ_ClassAttendance_Member_Schedule UNIQUE (MemberID, ScheduleID),
+    CONSTRAINT CK_ClassAttendance_MemberRating CHECK (MemberRating BETWEEN 1 AND 5),
+
+    CONSTRAINT FK_ClassAttendance_Members FOREIGN KEY (MemberID)
+        REFERENCES Members(MemberID),
+    CONSTRAINT FK_ClassAttendance_ClassSchedules FOREIGN KEY (ScheduleID)
+        REFERENCES ClassSchedules(ScheduleID)
+);
+GO
+
 
 INSERT INTO Members (FirstName, LastName, Email, Phone, DateOfBirth, JoinDate, MemberStatus)
 VALUES
@@ -163,4 +215,36 @@ VALUES
     (5, 5, '2025-07-01', NULL, 'Active');
 GO
 
+INSERT INTO GroupClasses (ClassName, ClassDescription)
+VALUES 
+('Yoga', 'Do some yoga.'),
+('Spin class', 'Fake bicycles.'),
+('Weight class', 'Lift some weights.'),
+('Pilates', 'Do some pilates.'),
+('CrossFit', 'Do some crossfit.');
+GO
+
+INSERT INTO ClassSchedules (ClassID, TrainerID, RoomID, ScheduleTime, MaxCapacity)
+VALUES 
+(1, 2, 1, '2026-07-20 08:00:00', 15),
+(2, 3, 2, '2026-07-20 09:30:00', 12),
+(3, 3, 1, '2026-07-21 17:30:00', 20),
+(4, 4, 2, '2026-07-22 10:00:00', 15),
+(1, 2, 1, '2026-07-27 08:00:00', 15),
+(5, 1, 3, '2026-07-23 06:00:00', 10);
+GO
+
+INSERT INTO ClassAttendance (MemberID, ScheduleID, CheckInTime, MemberRating)
+VALUES 
+(1, 1, '2026-07-20 07:55:00', 5),
+(1, 2, '2026-07-20 09:28:00', 4),
+(1, 3, '2026-07-21 17:25:00', 5),
+(1, 4, '2026-07-22 09:59:00', 4),
+(1, 5, '2026-07-23 05:50:00', 3),
+(1, 6, '2026-07-27 07:52:00', 5),
+(2, 1, '2026-07-20 07:54:00', 4),
+(3, 1, '2026-07-20 07:57:00', 2),
+(2, 3, '2026-07-21 17:20:00', 4),
+(5, 4, '2026-07-22 09:55:00', 5);
+GO
 
