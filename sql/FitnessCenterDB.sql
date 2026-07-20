@@ -297,3 +297,13 @@ WHERE a.MemberRating IS NOT NULL
 GROUP BY c.ClassID, c.ClassName;
 
 SELECT * FROM vw_MemberCheckInLog ORDER BY CheckInTime DESC;
+
+-- Count of members enrolled in each membership plan
+SELECT 
+    mp.MembershipPlanID,
+    mp.PlanName,
+    COUNT(mm.MemberID) AS MemberCount
+FROM MembershipPlans mp
+LEFT JOIN MemberMemberships mm ON mp.MembershipPlanID = mm.MembershipPlanID
+GROUP BY mp.MembershipPlanID, mp.PlanName
+ORDER BY MemberCount DESC;
