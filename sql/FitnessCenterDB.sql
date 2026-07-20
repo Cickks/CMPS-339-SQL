@@ -302,7 +302,7 @@ SELECT * FROM vw_MemberCheckInLog ORDER BY CheckInTime DESC;
 SELECT 
     mp.MembershipPlanID,
     mp.PlanName,
-    COUNT(DISTINCTmm.MemberID) AS MemberCount
+    COUNT(DISTINCT mm.MemberID) AS MemberCount
 FROM MembershipPlans mp
 LEFT JOIN MemberMemberships mm ON mp.MembershipPlanID = mm.MembershipPlanID
 GROUP BY mp.MembershipPlanID, mp.PlanName
