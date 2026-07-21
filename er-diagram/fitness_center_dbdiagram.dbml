@@ -1,10 +1,8 @@
-
-//db diagram
-
 Project FitnessCenterManagement {
   database_type: "SQL Server"
-  note: "Boutique fitness center database for CMPS 339. Includes memberships, trainers, private sessions, group classes, attendance, rooms, and payments."
+  note: "Final CMPS 339 fitness center schema. Includes memberships, trainers, rooms, group classes, attendance, private sessions, and payments."
 }
+
 Table Members {
   MemberID int [pk, increment]
   FirstName varchar(50) [not null]
@@ -14,7 +12,10 @@ Table Members {
   DateOfBirth date
   JoinDate date [not null, default: `GETDATE()`]
   MemberStatus varchar(20) [not null, default: 'Active']
+
+  Note: "MemberStatus is limited to Active, Inactive, or Suspended."
 }
+
 Table MembershipPlans {
   MembershipPlanID int [pk, increment]
   PlanName varchar(50) [not null, unique]
@@ -22,7 +23,10 @@ Table MembershipPlans {
   ClassAccessLimit int
   IncludesPersonalTraining bit [not null, default: 0]
   PlanStatus varchar(20) [not null, default: 'Active']
+
+  Note: "MonthlyFee must be positive. PlanStatus is Active or Inactive."
 }
+
 Table MemberMemberships {
   MemberMembershipID int [pk, increment]
   MemberID int [not null]
@@ -30,10 +34,14 @@ Table MemberMemberships {
   StartDate date [not null]
   EndDate date
   MembershipStatus varchar(20) [not null, default: 'Active']
+
   indexes {
     (MemberID, MembershipPlanID, StartDate) [unique]
   }
+
+  Note: "Connects members to plans. EndDate cannot be before StartDate."
 }
+
 Table Trainers {
   TrainerID int [pk, increment]
   FirstName varchar(50) [not null]
@@ -44,78 +52,95 @@ Table Trainers {
   HourlyRate decimal(10,2) [not null]
   HireDate date [not null, default: `GETDATE()`]
   TrainerStatus varchar(20) [not null, default: 'Active']
+
+  Note: "HourlyRate must be positive. TrainerStatus is Active or Inactive."
 }
+
 Table Rooms {
   RoomID int [pk, increment]
   RoomName varchar(50) [not null, unique]
   Capacity int [not null]
   RoomStatus varchar(20) [not null, default: 'Available']
+
+  Note: "Capacity must be positive."
 }
+
 Table GroupClasses {
-  GroupClassID int [pk, increment]
-  ClassName varchar(75) [not null, unique]
+  ClassID int [pk, increment]
+  ClassName varchar(50) [not null, unique]
   ClassDescription varchar(255)
-  DifficultyLevel varchar(20) [not null]
-  DefaultDurationMinutes int [not null]
   ClassStatus varchar(20) [not null, default: 'Active']
+
+  Note: "ClassStatus is Active or Inactive."
 }
+
 Table ClassSchedules {
-  ClassScheduleID int [pk, increment]
-  GroupClassID int [not null]
+  ScheduleID int [pk, increment]
+  ClassID int [not null]
   TrainerID int [not null]
   RoomID int [not null]
-  StartDateTime datetime2 [not null]
-  EndDateTime datetime2 [not null]
+  ScheduleTime datetime [not null]
   MaxCapacity int [not null]
-  ScheduleStatus varchar(20) [not null, default: 'Scheduled']
-  indexes {
-    (GroupClassID, TrainerID, StartDateTime) [unique]
-    (RoomID, StartDateTime)
-  }
+
+  Note: "Each schedule assigns one class, trainer, and room. MaxCapacity must be positive."
 }
+
 Table ClassAttendance {
-  ClassAttendanceID int [pk, increment]
-  ClassScheduleID int [not null]
+  AttendanceID int [pk, increment]
   MemberID int [not null]
-  CheckInTime datetime2
+  ScheduleID int [not null]
+  CheckInTime datetime [not null, default: `GETDATE()`]
   MemberRating int
-  AttendanceStatus varchar(20) [not null, default: 'Booked']
+
   indexes {
-    (ClassScheduleID, MemberID) [unique]
+    (MemberID, ScheduleID) [unique]
   }
+
+  Note: "A member can check in once per schedule. Ratings are between 1 and 5."
 }
+
 Table PrivateSessions {
   PrivateSessionID int [pk, increment]
   MemberID int [not null]
   TrainerID int [not null]
-  SessionStart datetime2 [not null]
-  SessionEnd datetime2 [not null]
-  FocusArea varchar(100) [not null]
+  RoomID int
+  SessionDate date [not null]
+  StartTime time(3) [not null]
+  DurationMinutes int [not null, default: 60]
   SessionFee decimal(10,2) [not null]
   SessionStatus varchar(20) [not null, default: 'Scheduled']
+  FocusArea varchar(100) [not null]
+
   indexes {
-    (MemberID, TrainerID, SessionStart) [unique]
+    (TrainerID, SessionDate, StartTime) [unique]
   }
+
+  Note: "Duration and fee must be positive. Room is optional."
 }
+
 Table Payments {
   PaymentID int [pk, increment]
   MemberID int [not null]
   MemberMembershipID int
   PrivateSessionID int
-  PaymentDate datetime2 [not null, default: `GETDATE()`]
+  PaymentDate date [not null, default: `GETDATE()`]
   Amount decimal(10,2) [not null]
-  PaymentMethod varchar(30) [not null]
+  PaymentMethod varchar(20) [not null]
   PaymentStatus varchar(20) [not null, default: 'Completed']
+
+  Note: "A payment must reference either one membership or one private session, but not both. Amount must be positive."
 }
+
 Ref: MemberMemberships.MemberID > Members.MemberID
 Ref: MemberMemberships.MembershipPlanID > MembershipPlans.MembershipPlanID
-Ref: PrivateSessions.MemberID > Members.MemberID
-Ref: PrivateSessions.TrainerID > Trainers.TrainerID
-Ref: ClassSchedules.GroupClassID > GroupClasses.GroupClassID
+Ref: ClassSchedules.ClassID > GroupClasses.ClassID
 Ref: ClassSchedules.TrainerID > Trainers.TrainerID
 Ref: ClassSchedules.RoomID > Rooms.RoomID
-Ref: ClassAttendance.ClassScheduleID > ClassSchedules.ClassScheduleID
 Ref: ClassAttendance.MemberID > Members.MemberID
+Ref: ClassAttendance.ScheduleID > ClassSchedules.ScheduleID
+Ref: PrivateSessions.MemberID > Members.MemberID
+Ref: PrivateSessions.TrainerID > Trainers.TrainerID
+Ref: PrivateSessions.RoomID > Rooms.RoomID
 Ref: Payments.MemberID > Members.MemberID
 Ref: Payments.MemberMembershipID > MemberMemberships.MemberMembershipID
 Ref: Payments.PrivateSessionID > PrivateSessions.PrivateSessionID
