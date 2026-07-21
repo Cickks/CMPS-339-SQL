@@ -161,6 +161,63 @@ CREATE TABLE ClassAttendance (
 );
 GO
 
+-- PrivateSessions Table
+CREATE TABLE PrivateSessions (
+    PrivateSessionID INT IDENTITY(1,1) NOT NULL,
+    MemberID INT NOT NULL,
+    TrainerID INT NOT NULL,
+    RoomID INT NULL,
+    SessionDate DATE NOT NULL,
+    StartTime TIME(3) NOT NULL,
+    DurationMinutes INT NOT NULL CONSTRAINT DF_PrivateSessions_DurationMinutes DEFAULT (60),
+    SessionFee DECIMAL(10,2) NOT NULL,
+    SessionStatus VARCHAR(20) NOT NULL CONSTRAINT DF_PrivateSessions_SessionStatus DEFAULT ('Scheduled'),
+    FocusArea VARCHAR(100) NOT NULL,
+
+    CONSTRAINT PK_PrivateSessions PRIMARY KEY (PrivateSessionID),
+    CONSTRAINT UQ_PrivateSessions_Trainer_Date_Time UNIQUE (TrainerID, SessionDate, StartTime),
+    CONSTRAINT CK_PrivateSessions_DurationMinutes CHECK (DurationMinutes > 0),
+    CONSTRAINT CK_PrivateSessions_SessionFee CHECK (SessionFee > 0),
+    CONSTRAINT CK_PrivateSessions_SessionStatus CHECK (SessionStatus IN ('Scheduled', 'Completed', 'Cancelled', 'No-Show')),
+    
+    CONSTRAINT FK_PrivateSessions_Members FOREIGN KEY (MemberID)
+        REFERENCES Members(MemberID),
+    CONSTRAINT FK_PrivateSessions_Trainers FOREIGN KEY (TrainerID)
+        REFERENCES Trainers(TrainerID),
+    CONSTRAINT FK_PrivateSessions_Rooms FOREIGN KEY (RoomID)
+        REFERENCES Rooms(RoomID)
+);
+GO
+
+-- Payments Table
+CREATE TABLE Payments (
+    PaymentID INT IDENTITY(1,1) NOT NULL,
+    MemberID INT NOT NULL,
+    MemberMembershipID INT NULL,
+    PrivateSessionID INT NULL,
+    PaymentDate DATE NOT NULL CONSTRAINT DF_Payments_PaymentDate DEFAULT (GETDATE()),
+    Amount DECIMAL(10,2) NOT NULL,
+    PaymentMethod VARCHAR(20) NOT NULL,
+    PaymentStatus VARCHAR(20) NOT NULL CONSTRAINT DF_Payments_PaymentStatus DEFAULT ('Completed'),
+
+    CONSTRAINT PK_Payments PRIMARY KEY (PaymentID),
+    CONSTRAINT CK_Payments_Amount CHECK (Amount > 0),
+    CONSTRAINT CK_Payments_PaymentMethod CHECK (PaymentMethod IN ('Credit Card', 'Debit Card', 'Cash', 'Bank Transfer', 'Check')),
+    CONSTRAINT CK_Payments_PaymentStatus CHECK (PaymentStatus IN ('Completed', 'Pending', 'Failed', 'Refunded')),
+    CONSTRAINT CK_Payments_LinkedTo CHECK (
+        (MemberMembershipID IS NOT NULL AND PrivateSessionID IS NULL)
+        OR
+        (MemberMembershipID IS NULL AND PrivateSessionID IS NOT NULL)
+    ),
+
+    CONSTRAINT FK_Payment_Members FOREIGN KEY (MemberID)
+        REFERENCES Members(MemberID),
+    CONSTRAINT FK_Payments_MemberMemberships FOREIGN KEY (MemberMembershipID)
+        REFERENCES MemberMemberships(MemberMembershipID),
+    CONSTRAINT FK_Payments_PrivateSessions FOREIGN KEY (PrivateSessionID)
+        REFERENCES PrivateSessions(PrivateSessionID)
+);
+GO
 
 INSERT INTO Members (FirstName, LastName, Email, Phone, DateOfBirth, JoinDate, MemberStatus)
 VALUES
@@ -248,6 +305,24 @@ VALUES
 (5, 4, '2026-07-22 09:55:00', 5);
 GO
 
+INSERT INTO PrivateSessions (MemberID, TrainerID, RoomID, SessionDate, StartTime, DurationMinutes, SessionFee, SessionStatus, FocusArea)
+VALUES
+(2, 1, 5, '2026-07-05', '09:00', 60, 45.00, 'Completed', 'Strength Training'),
+(2, 3, 5, '2026-07-08', '10:00', 45, 37.50, 'No-Show', 'HIIT Conditioning'),
+(5, 4, 5, '2026-07-10', '14:00', 60, 42.00, 'Completed', 'Core Flexibility'),
+(3, 1, 5, '2026-07-13', '08:00', 30, 22.50, 'Cancelled', 'Strength Training'),
+(1, 2, 3, '2026-08-22', '17:30', 60, 40.00, 'Scheduled', 'Flexibility & Mobility');
+GO
+
+INSERT INTO Payments (MemberID, MemberMembershipID, PrivateSessionID, PaymentDate, Amount, PaymentMethod, PaymentStatus)
+VALUES
+(1, 1, NULL, '2026-01-15', 29.99, 'Credit Card', 'Completed'),
+(2, 2, NULL, '2026-03-02', 59.99, 'Debit Card', 'Pending'),
+(2, NULL, 1, '2026-07-05', 45.00, 'Check', 'Failed'),
+(3, 3, NULL, '2026-04-20', 24.99, 'Cash', 'Completed'),
+(5, NULL, 3, '2026-07-10', 42.00, 'Bank Transfer', 'Refunded');
+GO
+
 CREATE VIEW vw_MemberCheckInLog AS
 SELECT 
     m.MemberID,
@@ -307,4 +382,42 @@ FROM MembershipPlans mp
 LEFT JOIN MemberMemberships mm ON mp.MembershipPlanID = mm.MembershipPlanID
 GROUP BY mp.MembershipPlanID, mp.PlanName
 ORDER BY MemberCount DESC;
+GO
+
+-- Query: Members, their private sessions, and the trainer who led each session
+SELECT
+    m.MemberID,
+    m.FirstName AS MemberFirstName,
+    m.LastName AS MemberLastName,
+    ps.PrivateSessionID,
+    ps.SessionDate,
+    ps.StartTime,
+    ps.DurationMinutes,
+    ps.SessionFee,
+    ps.SessionStatus,
+    ps.FocusArea,
+    t.TrainerID,
+    t.FirstName AS TrainerFirstName,
+    t.LastName AS TrainerLastName,
+    t.Specialization
+FROM Members m
+INNER JOIN PrivateSessions ps ON m.MemberID = ps.MemberID
+INNER JOIN Trainers t ON ps.TrainerID = t.TrainerID
+ORDER BY m.LastName, m.FirstName, ps.SessionDate;
+GO
+
+-- View: Trainer revenue and total session hours based on COMPLETED private sessions only
+CREATE VIEW vw_TrainerRevenue AS
+SELECT
+    t.TrainerID,
+    t.FirstName AS TrainerFirstName,
+    t.LastName AS TrainerLastName,
+    t.Specialization,
+    COUNT(ps.PrivateSessionID) AS CompletedSessions,
+    ISNULL(ROUND(SUM(ps.DurationMinutes) / 60.0, 2), 0) AS TotalSessionHours,
+    ISNULL(SUM(ps.SessionFee), 0) AS TotalRevenue
+FROM Trainers t
+LEFT JOIN PrivateSessions ps
+    ON t.TrainerID = ps.TrainerID AND ps.SessionStatus = 'Completed'
+GROUP BY t.TrainerID, t.FirstName, t.LastName, t.Specialization;
 GO
