@@ -172,7 +172,7 @@ CREATE TABLE PrivateSessions (
     DurationMinutes INT NOT NULL CONSTRAINT DF_PrivateSessions_DurationMinutes DEFAULT (60),
     SessionFee DECIMAL(10,2) NOT NULL,
     SessionStatus VARCHAR(20) NOT NULL CONSTRAINT DF_PrivateSessions_SessionStatus DEFAULT ('Scheduled'),
-    FocusArea VARCHAR(50) NOT NULL,
+    FocusArea VARCHAR(100) NOT NULL,
 
     CONSTRAINT PK_PrivateSessions PRIMARY KEY (PrivateSessionID),
     CONSTRAINT UQ_PrivateSessions_Trainer_Date_Time UNIQUE (TrainerID, SessionDate, StartTime),
@@ -311,7 +311,7 @@ VALUES
 (2, 3, 5, '2026-07-08', '10:00', 45, 37.50, 'No-Show', 'HIIT Conditioning'),
 (5, 4, 5, '2026-07-10', '14:00', 60, 42.00, 'Completed', 'Core Flexibility'),
 (3, 1, 5, '2026-07-13', '08:00', 30, 22.50, 'Cancelled', 'Strength Training'),
-(1, 2, 3, '2026-07-15', '17:30', 60, 40.00, 'Scheduled', 'Flexibility & Mobility');
+(1, 2, 3, '2026-08-22', '17:30', 60, 40.00, 'Scheduled', 'Flexibility & Mobility');
 GO
 
 INSERT INTO Payments (MemberID, MemberMembershipID, PrivateSessionID, PaymentDate, Amount, PaymentMethod, PaymentStatus)
@@ -395,6 +395,7 @@ SELECT
     ps.DurationMinutes,
     ps.SessionFee,
     ps.SessionStatus,
+    ps.FocusArea,
     t.TrainerID,
     t.FirstName AS TrainerFirstName,
     t.LastName AS TrainerLastName,
