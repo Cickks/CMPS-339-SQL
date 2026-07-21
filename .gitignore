@@ -10,3 +10,16 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Visual Studio and .NET build output
+.vs/
+**/bin/
+**/obj/
+*.suo
+*.user
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json

@@ -1,0 +1,106 @@
+@model AttendancePageViewModel
+@{
+    ViewData["Title"] = "Attendance";
+}
+
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Attendance and feedback</p>
+        <h1>Check-in report</h1>
+        <p>Member attendance from the database view, plus ratings by class.</p>
+    </div>
+    <span class="record-count">@Model.CheckIns.Count check-ins</span>
+</header>
+
+<section aria-labelledby="rating-heading">
+    <div class="section-heading">
+        <div>
+            <h2 id="rating-heading">Class rating summary</h2>
+            <p>Null ratings are excluded from each average.</p>
+        </div>
+    </div>
+
+    @if (Model.Ratings.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No class ratings found</h3>
+            <p>No class ratings are currently available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="rating-grid">
+            @foreach (var rating in Model.Ratings)
+            {
+                <article class="rating-card">
+                    <span>@rating.ClassName</span>
+                    @if (rating.AverageRating.HasValue)
+                    {
+                        <strong>@rating.AverageRating.Value.ToString("0.0") / 5</strong>
+                        <small>@rating.RatingCount rating@(rating.RatingCount == 1 ? "" : "s")</small>
+                    }
+                    else
+                    {
+                        <strong class="no-rating">No ratings</strong>
+                        <small>0 ratings</small>
+                    }
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<section aria-labelledby="checkin-heading">
+    <div class="section-heading">
+        <div>
+            <h2 id="checkin-heading">Member check-ins</h2>
+            <p>Newest check-ins appear first.</p>
+        </div>
+    </div>
+
+    @if (Model.CheckIns.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No attendance records found</h3>
+            <p>No attendance records are currently available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <caption class="visually-hidden">Member class check-in log</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Member</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Scheduled</th>
+                            <th scope="col">Checked in</th>
+                            <th scope="col">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var checkIn in Model.CheckIns)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@checkIn.MemberName</strong>
+                                    <small>Member #@checkIn.MemberId</small>
+                                </td>
+                                <td>@checkIn.ClassName</td>
+                                <td>@checkIn.ScheduleTime.ToString("MMM d, yyyy · h:mm tt")</td>
+                                <td>@checkIn.CheckInTime.ToString("MMM d, yyyy · h:mm tt")</td>
+                                <td>
+                                    @(checkIn.MemberRating.HasValue
+                                        ? $"{checkIn.MemberRating} / 5"
+                                        : "Not rated")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</section>

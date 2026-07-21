@@ -1,0 +1,55 @@
+@model IReadOnlyList<MemberSummary>
+@{
+    ViewData["Title"] = "Members";
+}
+
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Members and memberships</p>
+        <h1>Member directory</h1>
+        <p>Each member appears once with their most relevant membership record.</p>
+    </div>
+    <span class="record-count">@Model.Count records</span>
+</header>
+
+@if (Model.Count == 0)
+{
+    <section class="empty-state">
+        <h2>No members found</h2>
+        <p>No member records are currently available.</p>
+    </section>
+}
+else
+{
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <caption class="visually-hidden">Member membership summary</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Member</th>
+                        <th scope="col">Member status</th>
+                        <th scope="col">Join date</th>
+                        <th scope="col">Plan</th>
+                        <th scope="col">Membership status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var member in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@member.FullName</strong>
+                                <small>Member #@member.MemberId</small>
+                            </td>
+                            <td><span class="status-pill">@member.MemberStatus</span></td>
+                            <td>@member.JoinDate.ToString("MMM d, yyyy")</td>
+                            <td>@(member.PlanName ?? "No membership")</td>
+                            <td>@(member.MembershipStatus ?? "Not enrolled")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

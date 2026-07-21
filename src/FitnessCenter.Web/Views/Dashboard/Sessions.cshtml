@@ -1,0 +1,62 @@
+@model IReadOnlyList<PrivateSessionSummary>
+@{
+    ViewData["Title"] = "Private Sessions";
+}
+
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Personal training</p>
+        <h1>Private sessions</h1>
+        <p>Members joined with their trainers, rooms, session details, and focus areas.</p>
+    </div>
+    <span class="record-count">@Model.Count sessions</span>
+</header>
+
+@if (Model.Count == 0)
+{
+    <section class="empty-state">
+        <h2>No private sessions found</h2>
+        <p>No private training sessions are currently available.</p>
+    </section>
+}
+else
+{
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <caption class="visually-hidden">Private training session schedule</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Member</th>
+                        <th scope="col">Trainer</th>
+                        <th scope="col">Date and time</th>
+                        <th scope="col">Focus area</th>
+                        <th scope="col">Room</th>
+                        <th scope="col">Fee</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var session in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@session.MemberName</strong>
+                                <small>Session #@session.PrivateSessionId</small>
+                            </td>
+                            <td>@session.TrainerName</td>
+                            <td>
+                                @session.SessionDate.ToString("MMM d, yyyy")
+                                <small>@DateTime.Today.Add(session.StartTime).ToString("h:mm tt") · @session.DurationMinutes min</small>
+                            </td>
+                            <td>@session.FocusArea</td>
+                            <td>@(session.RoomName ?? "Not assigned")</td>
+                            <td>@session.SessionFee.ToString("C")</td>
+                            <td><span class="status-pill">@session.SessionStatus</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

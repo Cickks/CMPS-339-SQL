@@ -1,0 +1,45 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Admin sign in";
+}
+
+<section class="login-card" aria-labelledby="login-title">
+    <div class="login-brand">
+        <span class="brand-mark brand-mark-large" aria-hidden="true">NF</span>
+        <div>
+            <p class="eyebrow">CMPS 339 database project</p>
+            <h1 id="login-title">Northstar Fitness</h1>
+        </div>
+    </div>
+
+    <p class="login-intro">
+        Sign in to explore the read-only admin dashboard backed by
+        <strong>FitnessCenterDB</strong>.
+    </p>
+
+    <form asp-action="Login" method="post" class="login-form">
+        <input asp-for="ReturnUrl" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary" role="alert"></div>
+
+        <div class="field">
+            <label asp-for="Username"></label>
+            <input asp-for="Username" autocomplete="username" />
+            <span asp-validation-for="Username"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="current-password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+
+        <button class="button button-primary button-full" type="submit">
+            Open dashboard
+        </button>
+    </form>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
