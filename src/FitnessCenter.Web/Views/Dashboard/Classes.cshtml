@@ -1,0 +1,55 @@
+@model IReadOnlyList<ClassScheduleSummary>
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Class operations</p>
+        <h1>Class schedules</h1>
+        <p>All scheduled offerings joined with trainers and rooms.</p>
+    </div>
+    <span class="record-count">@Model.Count schedules</span>
+</header>
+
+@if (Model.Count == 0)
+{
+    <section class="empty-state">
+        <h2>No schedules found</h2>
+        <p>No class schedules are currently available.</p>
+    </section>
+}
+else
+{
+    <div class="table-card">
+        <div class="table-scroll">
+            <table>
+                <caption class="visually-hidden">Group class schedule list</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Class</th>
+                        <th scope="col">Scheduled time</th>
+                        <th scope="col">Trainer</th>
+                        <th scope="col">Room</th>
+                        <th scope="col">Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var schedule in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@schedule.ClassName</strong>
+                                <small>Schedule #@schedule.ScheduleId</small>
+                            </td>
+                            <td>@schedule.ScheduleTime.ToString("ddd, MMM d · h:mm tt")</td>
+                            <td>@schedule.TrainerName</td>
+                            <td>@schedule.RoomName</td>
+                            <td>@schedule.MaxCapacity members</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

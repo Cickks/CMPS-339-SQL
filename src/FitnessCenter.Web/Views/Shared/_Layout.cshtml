@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | Northstar Fitness</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FitnessCenter.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="app-body">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="app-shell">
+            <aside class="sidebar" aria-label="Main navigation">
+                <a class="brand" asp-controller="Dashboard" asp-action="Index">
+                    <span class="brand-mark" aria-hidden="true">NF</span>
+                    <span>
+                        <strong>Northstar Fitness</strong>
+                        <small>Admin portal</small>
+                    </span>
+                </a>
+
+                <nav class="sidebar-nav">
+                    <a asp-controller="Dashboard" asp-action="Index">Overview</a>
+                    <a asp-controller="Dashboard" asp-action="Members">Members</a>
+                    <a asp-controller="Dashboard" asp-action="Classes">Classes</a>
+                    <a asp-controller="Dashboard" asp-action="Attendance">Attendance</a>
+                    <a asp-controller="Dashboard" asp-action="Sessions">Sessions</a>
+                    <a asp-controller="Dashboard" asp-action="Payments">Payments</a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <span class="signed-in-label">Signed in as</span>
+                    <strong>@User.Identity.Name</strong>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button class="button button-secondary button-full" type="submit">
+                            Sign out
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <div class="content-shell">
+                <main class="main-content" id="main-content">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+    else
+    {
+        <main class="auth-shell" id="main-content">
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

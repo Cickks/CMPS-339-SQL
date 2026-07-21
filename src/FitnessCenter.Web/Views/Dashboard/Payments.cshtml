@@ -1,0 +1,96 @@
+@model PaymentsPageViewModel
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Payments and revenue</p>
+        <h1>Financial activity</h1>
+        <p>Membership and private-session payments with completed trainer revenue.</p>
+    </div>
+    <span class="record-count">@Model.Payments.Count payments</span>
+</header>
+
+<section aria-labelledby="revenue-heading">
+    <div class="section-heading">
+        <div>
+            <h2 id="revenue-heading">Trainer revenue</h2>
+            <p>Only completed private sessions are included.</p>
+        </div>
+    </div>
+
+    @if (Model.TrainerRevenue.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No trainer revenue found</h3>
+            <p>No trainer revenue records are currently available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="rating-grid">
+            @foreach (var trainer in Model.TrainerRevenue)
+            {
+                <article class="rating-card">
+                    <span>@trainer.TrainerName</span>
+                    <strong>@trainer.TotalRevenue.ToString("C")</strong>
+                    <small>@trainer.CompletedSessions completed · @trainer.TotalSessionHours.ToString("0.##") hours</small>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<section aria-labelledby="payments-heading">
+    <div class="section-heading">
+        <div>
+            <h2 id="payments-heading">Payment history</h2>
+            <p>Newest payments appear first.</p>
+        </div>
+    </div>
+
+    @if (Model.Payments.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No payments found</h3>
+            <p>No payment records are currently available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <caption class="visually-hidden">Member payment history</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Member</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Payment for</th>
+                            <th scope="col">Method</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@payment.MemberName</strong>
+                                    <small>Payment #@payment.PaymentId</small>
+                                </td>
+                                <td>@payment.PaymentDate.ToString("MMM d, yyyy")</td>
+                                <td>@payment.PaymentFor</td>
+                                <td>@payment.PaymentMethod</td>
+                                <td>@payment.Amount.ToString("C")</td>
+                                <td><span class="status-pill">@payment.PaymentStatus</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</section>
